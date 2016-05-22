@@ -1,6 +1,6 @@
 extern crate clap;
 
-use clap::{App, Arg, ErrorKind};
+use clap::{App, AppSettings, Arg, ErrorKind};
 
 #[test]
 fn only_pos_follow() {
@@ -175,4 +175,16 @@ fn default_values_user_value() {
     let m = r.unwrap();
     assert!(m.is_present("arg"));
     assert_eq!(m.value_of("arg").unwrap(), "value");
+}
+
+#[test]
+fn positional_trailingvararg() {
+    let m = App::new("positional")
+        .setting(AppSettings::TrailingVarArg)
+        .arg(
+            Arg::from_usage("[opt]... 'some pos'"),
+            )
+        .get_matches_from(vec!["", "test", "--foo", "-Wl,-bar"]);
+    assert!(m.is_present("opt"));
+    assert_eq!(m.values_of("opt").unwrap().collect::<Vec<_>>(), &["test", "--foo", "-Wl,-bar"]);
 }
