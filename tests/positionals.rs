@@ -16,6 +16,19 @@ fn only_pos_follow() {
 }
 
 #[test]
+fn only_pos_follow_multiple() {
+    let r = App::new("onlypos")
+        .args(&[Arg::from_usage("-f [flag] 'some opt'"),
+                Arg::from_usage("[arg]... 'some arg'")])
+        .get_matches_from_safe(vec!["", "--", "-f", "-g,x"]);
+    assert!(r.is_ok());
+    let m = r.unwrap();
+    assert!(m.is_present("arg"));
+    assert!(!m.is_present("f"));
+    assert_eq!(m.values_of("arg").unwrap().collect::<Vec<_>>(), &["-f", "-g,x"]);
+}
+
+#[test]
 fn positional() {
     let m = App::new("positional")
         .args(&[
